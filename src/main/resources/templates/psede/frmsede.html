@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="layout::head">
+    <meta charset="UTF-8">
+    <title>Mantenimiento de Sede</title>
+
+</head>
+<body>
+<nav th:replace="layout::menu"></nav>
+<link th:href="@{/css/bootstrap/sede.css}" rel="stylesheet" />
+<script th:src="@{/js/web/backoffice/psede/frmsede.js}" type="text/javascript"></script>
+<div class="main-content">
+    <div class="card">
+        <div class="card-header">
+            Mantenimiento de Sede
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-primary" id="btnagregar">Agregar</button>
+            <hr />
+            <div id="divmensaje"></div>
+            <table id="tblsede" class="table">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Info</th>
+                    <th scope="col">Lunes</th>
+                    <th scope="col">Martes</th>
+                    <th scope="col">Miércoles</th>
+                    <th scope="col">Jueves</th>
+                    <th scope="col">Viernes</th>
+                    <th scope="col">Sábado</th>
+                    <th scope="col">Domingo</th>
+                    <th scope="col">Hora Apertura</th>
+                    <th scope="col">Hora Cierre</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Actualizar</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sede : ${listsede}">
+                    <td th:text="${sede.sedeid}"></td>
+                    <td th:text="${sede.nombresede}"></td>
+                    <td th:text="${sede.sedeinfo}"></td>
+                    <td th:text="${sede.lunes ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.martes ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.miercoles ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.jueves ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.viernes ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.sabado ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.domingo ? 'Sí' : 'No'}"></td>
+                    <td th:text="${sede.horaabierto}"></td>
+                    <td th:text="${sede.horacierre}"></td>
+                    <td th:text="${sede.estadosede ? 'activo' : 'inactivo'}"></td>
+                    <td>
+                        <button type="button" class="btn btn-info btnactualizar"
+                                th:data-sedeid="${sede.sedeid}"
+                                th:data-nombresede="${sede.nombresede}"
+                                th:data-sedeinfo="${sede.sedeinfo}"
+                                th:data-lunes="${sede.lunes}"
+                                th:data-martes="${sede.martes}"
+                                th:data-miercoles="${sede.miercoles}"
+                                th:data-jueves="${sede.jueves}"
+                                th:data-viernes="${sede.viernes}"
+                                th:data-sabado="${sede.sabado}"
+                                th:data-domingo="${sede.domingo}"
+                                th:data-horaabierto="${sede.horaabierto}"
+                                th:data-horacierre="${sede.horacierre}">Actualizar</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalSede" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Sede</h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="txtnombresede" placeholder="Nombre de la sede">
+                    <label for="txtnombresede">Nombre de la sede</label>
+                    <div class="invalid-feedback" id="errorNombreSede"></div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="txtsedeinfo" placeholder="Información de la sede">
+                    <label for="txtsedeinfo">Información de la sede</label>
+
+                </div>
+                <div class="dias-y-horas">
+                    <div class="dias">
+                        <h5>Selecciona el día</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cblunes">
+                            <label class="form-check-label" for="cblunes">LUN</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbmartes">
+                            <label class="form-check-label" for="cbmartes">MAR</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbmiercoles">
+                            <label class="form-check-label" for="cbmiercoles">MIE</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbjueves">
+                            <label class="form-check-label" for="cbjueves">JUE</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbviernes">
+                            <label class="form-check-label" for="cbviernes">VIE</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbsabado">
+                            <label class="form-check-label" for="cbsabado">SAB</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cbdomingo">
+                            <label class="form-check-label" for="cbdomingo">DOM</label>
+                        </div>
+                    </div>
+                    <div class="horas">
+                        <div class="form-floating mb-3">
+                            <input type="time" class="form-control" id="txthoraabierto" placeholder="Hora de Apertura">
+                            <label for="txthoraabierto">Hora de Apertura</label>
+                            <div class="invalid-feedback" id="errorHoraAbierto"></div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="time" class="form-control" id="txthoracierre" placeholder="Hora de Cierre">
+                            <label for="txthoracierre">Hora de Cierre</label>
+                        </div>
+                        <div class="form-check form-switch" id="switchsede">
+                            <input class="form-check-input" type="checkbox" role="switch" id="cbestadosede">
+                            <label class="form-check-label" for="cbestadosede">Estado de la Sede</label>
+                            <div class="invalid-feedback" id="errorHoraCierre"></div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="hddcodsede" value="0">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button id="btnguardar" type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

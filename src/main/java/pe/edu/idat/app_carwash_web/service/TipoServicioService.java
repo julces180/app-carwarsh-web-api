@@ -83,6 +83,47 @@ public class TipoServicioService implements ITipoServicioService {
         tipoServicioRepository.save(tipoServicio);
     }
     @Override
+    @Transactional
+    public void actualizarTipoServicio(TipoServicioDto tipoServicioDto) {
+        TipoServicio tipoServicio = tipoServicioRepository.findById(tipoServicioDto.getTiposervicioid())
+                .orElseThrow(() -> new IllegalArgumentException("TipoServicio no encontrado: " + tipoServicioDto.getTiposervicioid()));
+
+        // Actualizar los datos del TipoServicio
+        tipoServicio.setDescripciontps(tipoServicioDto.getDescripciontps());
+        tipoServicio.setTipovehiculo(tipoServicioDto.getTipovehiculo());
+        tipoServicio.setEstadotps(tipoServicioDto.getEstadotps());
+
+        // Limpiar las acciones existentes
+        tipoServicio.getAcciones().clear();
+
+        // Asignar las nuevas acciones al tipo de servicio a través de DetalleServicio
+        Set<DetalleServicio> detalleServicios = tipoServicioDto.getAcciones().stream()
+                .map(accionesDto -> {
+                    Acciones accion = accionesRepository.findById(accionesDto.getAccionesid())
+                            .orElseThrow(() -> new IllegalArgumentException("Acción no encontrada: " + accionesDto.getAccionesid()));
+
+                    DetalleServicio detalleServicio = new DetalleServicio();
+
+                    // Crear y configurar TipoAccionesId
+                    TipoAccionesId tipoAccionesId = new TipoAccionesId();
+                    tipoAccionesId.setAccionesid(accion.getAccionesid());
+                    tipoAccionesId.setTiposervicioid(tipoServicio.getTiposervicioid());
+
+                    detalleServicio.setId(tipoAccionesId);
+                    detalleServicio.setAcciones(accion);
+                    detalleServicio.setTiposervicio(tipoServicio);
+
+                    return detalleServicio;
+                })
+                .collect(Collectors.toSet());
+
+        tipoServicio.setAcciones(detalleServicios);
+
+        // Guardar los cambios
+        tipoServicioRepository.save(tipoServicio);
+    }
+
+    @Override
     public TipoServicio obtenerTipoServicio(Integer idtiposervicio) {
         return tipoServicioRepository.findById(idtiposervicio).orElse(null);
     }

@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ITipoServicioService {
     List<TipoServicioDto> listarTipoServicio();
-    TipoServicio guardarTipoServicio(TipoServicioDto tipoServicioDto);
+    void guardarTipoServicio(TipoServicioDto tipoServicioDto);
     TipoServicio obtenerTipoServicio(Integer idtiposervicio);
 }

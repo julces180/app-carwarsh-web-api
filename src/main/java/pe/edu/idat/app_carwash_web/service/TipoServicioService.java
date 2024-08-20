@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pe.edu.idat.app_carwash_web.model.bd.Acciones;
 import pe.edu.idat.app_carwash_web.model.bd.DetalleServicio;
 import pe.edu.idat.app_carwash_web.model.bd.TipoServicio;
+import pe.edu.idat.app_carwash_web.model.bd.pk.TipoAccionesId;
 import pe.edu.idat.app_carwash_web.model.bd.dto.AccionesDto;
 import pe.edu.idat.app_carwash_web.model.bd.dto.TipoServicioDto;
 import pe.edu.idat.app_carwash_web.repository.AccionesRepository;
@@ -49,7 +50,7 @@ public class TipoServicioService implements ITipoServicioService {
 
     @Override
     @Transactional
-    public TipoServicio guardarTipoServicio(TipoServicioDto tipoServicioDto) {
+    public void guardarTipoServicio(TipoServicioDto tipoServicioDto) {
         TipoServicio tipoServicio = new TipoServicio();
         tipoServicio.setDescripciontps(tipoServicioDto.getDescripciontps());
         tipoServicio.setTipovehiculo(tipoServicioDto.getTipovehiculo());
@@ -57,11 +58,18 @@ public class TipoServicioService implements ITipoServicioService {
 
         // Asignar las acciones al tipo de servicio a través de DetalleServicio
         Set<DetalleServicio> detalleServicios = tipoServicioDto.getAcciones().stream()
-                .map(accionDto -> {
-                    Acciones accion = accionesRepository.findById(accionDto.getAccionesid())
-                            .orElseThrow(() -> new IllegalArgumentException("Acción no encontrada: " + accionDto.getAccionesid()));
+                .map(accionesDto -> {
+                    Acciones accion = accionesRepository.findById(accionesDto.getAccionesid())
+                            .orElseThrow(() -> new IllegalArgumentException("Acción no encontrada: " + accionesDto.getAccionesid()));
 
                     DetalleServicio detalleServicio = new DetalleServicio();
+
+                    // Crear y configurar TipoAccionesId
+                    TipoAccionesId tipoAccionesId = new TipoAccionesId();
+                    tipoAccionesId.setAccionesid(accion.getAccionesid());
+                    tipoAccionesId.setTiposervicioid(tipoServicio.getTiposervicioid());
+
+                    detalleServicio.setId(tipoAccionesId);
                     detalleServicio.setAcciones(accion);
                     detalleServicio.setTiposervicio(tipoServicio);
 
@@ -72,7 +80,7 @@ public class TipoServicioService implements ITipoServicioService {
         tipoServicio.setAcciones(detalleServicios);
 
         // Guardar el tipo de servicio
-        return tipoServicioRepository.save(tipoServicio);
+        tipoServicioRepository.save(tipoServicio);
     }
     @Override
     public TipoServicio obtenerTipoServicio(Integer idtiposervicio) {

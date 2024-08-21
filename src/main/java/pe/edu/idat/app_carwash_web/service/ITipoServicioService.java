@@ -11,6 +11,7 @@ public interface ITipoServicioService {
     void guardarTipoServicio(TipoServicioDto tipoServicioDto);
 
     void actualizarTipoServicio(TipoServicioDto tipoServicioDto);
+    void eliminarTipoServicio(Integer tiposervicioid);
 
     TipoServicio obtenerTipoServicio(Integer idtiposervicio);
 }

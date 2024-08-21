@@ -1,6 +1,8 @@
 package pe.edu.idat.app_carwash_web.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,5 +96,21 @@ public class TipoServicioController {
         }
         return RespuestaGeneral.builder().mensaje(mensaje).resultado(resultado).build();
     }
+    @DeleteMapping("/eliminar/{tiposervicioid}")
+    public ResponseEntity<RespuestaGeneral> eliminarTipoServicio(@PathVariable Integer tiposervicioid) {
+        try {
+            tipoServicioService.eliminarTipoServicio(tiposervicioid);
+            return ResponseEntity.ok(RespuestaGeneral.builder()
+                    .mensaje("Tipo de servicio eliminado correctamente")
+                    .resultado(true)
+                    .build());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RespuestaGeneral.builder()
+                    .mensaje("Ha ocurrido un error: " + ex.getMessage())
+                    .resultado(false)
+                    .build());
+        }
+    }
+
 
 }

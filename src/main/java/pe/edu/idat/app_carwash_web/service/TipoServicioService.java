@@ -10,6 +10,7 @@ import pe.edu.idat.app_carwash_web.model.bd.pk.TipoAccionesId;
 import pe.edu.idat.app_carwash_web.model.bd.dto.AccionesDto;
 import pe.edu.idat.app_carwash_web.model.bd.dto.TipoServicioDto;
 import pe.edu.idat.app_carwash_web.repository.AccionesRepository;
+import pe.edu.idat.app_carwash_web.repository.DetalleServicioRepository;
 import pe.edu.idat.app_carwash_web.repository.TipoServicioRepository;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class TipoServicioService implements ITipoServicioService {
     private TipoServicioRepository tipoServicioRepository;
     private AccionesRepository accionesRepository;
+    private DetalleServicioRepository detalleServicioRepository;
 
 
     @Override
@@ -93,7 +95,10 @@ public class TipoServicioService implements ITipoServicioService {
         tipoServicio.setTipovehiculo(tipoServicioDto.getTipovehiculo());
         tipoServicio.setEstadotps(tipoServicioDto.getEstadotps());
 
-        // Limpiar las acciones existentes
+        // Limpiar las acciones existentes correctamente
+        detalleServicioRepository.deleteAllByTipoServicio(tipoServicio);
+
+        // No reasignar la colección, solo limpiarla y añadir los nuevos elementos
         tipoServicio.getAcciones().clear();
 
         // Asignar las nuevas acciones al tipo de servicio a través de DetalleServicio
@@ -117,11 +122,26 @@ public class TipoServicioService implements ITipoServicioService {
                 })
                 .collect(Collectors.toSet());
 
-        tipoServicio.setAcciones(detalleServicios);
+        // Agregar las nuevas acciones a la colección existente
+        tipoServicio.getAcciones().addAll(detalleServicios);
 
         // Guardar los cambios
         tipoServicioRepository.save(tipoServicio);
     }
+    @Override
+    @Transactional
+    public void eliminarTipoServicio(Integer tiposervicioid) {
+        // Buscar la instancia de TipoServicio a eliminar
+        TipoServicio tipoServicio = tipoServicioRepository.findById(tiposervicioid)
+                .orElseThrow(() -> new IllegalArgumentException("TipoServicio no encontrado: " + tiposervicioid));
+
+        // Eliminar los registros de DetalleServicio asociados con el TipoServicio
+        detalleServicioRepository.deleteAllByTipoServicio(tipoServicio);
+
+        // Eliminar el TipoServicio
+        tipoServicioRepository.delete(tipoServicio);
+    }
+
 
     @Override
     public TipoServicio obtenerTipoServicio(Integer idtiposervicio) {

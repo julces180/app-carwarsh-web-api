@@ -14,14 +14,18 @@ public class ClienteService implements IClienteService{
 
     @Override
     public List<Cliente> listarCliente() {
+
         return clienteRepository.findAll();
     }
 
     @Override
-    public Cliente guardarCliente(Cliente cliente) {return clienteRepository.save(cliente);}
+    public Cliente guardarCliente(Cliente cliente) {
+        return clienteRepository.save(cliente);
+    }
 
     @Override
     public Cliente obtenerCliente(Integer idcliente) {
+
         return clienteRepository.findById(idcliente).orElse(null);
     }
 
